@@ -1,0 +1,19 @@
+{
+    "name": "enlitepro/enlite-mail",
+    "description": "The simple service for send mail with templates",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Uladzimir Struts",
+            "email": "Sysaninster@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zend-mail": ">=2.2.3",
+        "zendframework/zend-view": ">=2.2.3"
+    },
+    "require-dev": {
+        "enlitepro/zf2-scaffold":                "dev-master"
+    }
+}
