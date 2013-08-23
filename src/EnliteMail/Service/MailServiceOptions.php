@@ -35,8 +35,12 @@ class MailServiceOptions implements AbstractOptions
      */
     public function __construct($config = [])
     {
-        $this->setRenderer($config['renderer']);
-        $this->setTransport($config['transport']);
+        if (isset($config['renderer'])) {
+            $this->setRenderer($config['renderer']);
+        }
+        if (isset($config['transport'])) {
+            $this->setTransport($config['transport']);
+        }
     }
 
     /**

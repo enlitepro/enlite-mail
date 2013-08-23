@@ -11,6 +11,9 @@
 
 namespace EnliteMail\Service;
 
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
+
 class MailServiceOptionsFactory implements FactoryInterface
 {
 
