@@ -5,10 +5,13 @@ namespace EnliteMail\Service;
 use Message\Template;
 use Zend\Mail\Message;
 use Zend\Mail\Transport\TransportInterface;
+use Zend\Mime\Mime;
+use Zend\Mime\Part;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\View\Renderer\RendererInterface;
+use Zend\Mime\Message as MimeMessage;
 
 class MailService implements ServiceLocatorAwareInterface
 {
@@ -53,16 +56,55 @@ class MailService implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Inject files to message
+     *
+     * @param Message $message
+     * @param array $files Paths to files
+     * @param string $typeBody
+     */
+    public function injectFiles(Message $message, $files, $typeBody = Mime::TYPE_TEXT) {
+        $content = new MimeMessage();
+        $body = new MimeMessage();
+
+        $htmlPart = new Part($message->getBody());
+        $htmlPart->type = $typeBody;
+        $content->addPart($htmlPart);
+
+        $contentPart = new Part($content->generateMessage());
+        $contentPart->type = 'multipart/alternative;' . PHP_EOL . ' boundary="' . $content->getMime()->boundary() . '"';
+        $body->addPart($contentPart);
+
+        if (count($files)) {
+            foreach ($files as $file) {
+                $attachment = new Part(fopen($file, 'r'));
+                $attachment->type = mime_content_type($file);
+                $attachment->encoding = Mime::ENCODING_BASE64;
+                $attachment->disposition = Mime::DISPOSITION_ATTACHMENT;
+
+                $body->addPart($attachment);
+            }
+        }
+
+        $message->setBody($body);
+
+    }
+
+    /**
      * Send a template by mail
      *
      * @param string|array $recipients
      * @param Template $template
+     * @param array $files
      */
-    public function sendTemplate($recipients, Template $template)
+    public function sendTemplate($recipients, Template $template, $files = [])
     {
         $message = $this->factoryMessage();
         $message->setTo($recipients);
         $template->render($message);
+
+        if (count($files)) {
+            $this->injectFiles($message, $files, Mime::TYPE_HTML);
+        }
 
         $this->sendMessage($message);
     }
