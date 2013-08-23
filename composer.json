@@ -2,6 +2,7 @@
     "name": "enlitepro/enlite-mail",
     "description": "The simple service for send mail with templates",
     "minimum-stability": "stable",
+    "license": "MIT",
     "authors": [
         {
             "name": "Uladzimir Struts",
