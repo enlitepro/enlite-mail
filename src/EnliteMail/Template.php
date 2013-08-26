@@ -3,7 +3,7 @@
  * @author Evgeny Shpilevsky <evgeny@shpilevsky.com>
  */
 
-namespace Message;
+namespace EnliteMail;
 
 use Zend\Mail\Message;
 use Zend\View\Helper\HeadTitle;

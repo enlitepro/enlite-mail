@@ -2,7 +2,7 @@
 
 namespace EnliteMail\Service;
 
-use Message\Template;
+use EnliteMail\Template;
 use Zend\Mail\Message;
 use Zend\Mail\Transport\TransportInterface;
 use Zend\Mime\Mime;
