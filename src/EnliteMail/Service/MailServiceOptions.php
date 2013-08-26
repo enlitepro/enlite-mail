@@ -13,7 +13,7 @@ namespace EnliteMail\Service;
 
 use Zend\Stdlib\AbstractOptions;
 
-class MailServiceOptions implements AbstractOptions
+class MailServiceOptions extends AbstractOptions
 {
 
     /**
