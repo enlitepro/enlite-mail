@@ -2,6 +2,11 @@
     "name": "enlitepro/enlite-mail",
     "description": "The simple service for send mail with templates",
     "minimum-stability": "stable",
+    "autoload": {
+        "psr-0": {
+            "EnliteMail": "src/"
+        }
+    },
     "license": "MIT",
     "authors": [
         {
