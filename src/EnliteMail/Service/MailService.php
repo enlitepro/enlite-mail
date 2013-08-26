@@ -16,8 +16,7 @@ use Zend\Mime\Message as MimeMessage;
 class MailService implements ServiceLocatorAwareInterface
 {
 
-    use ServiceLocatorAwareTrait,
-        MailRepositoryTrait;
+    use ServiceLocatorAwareTrait;
 
     /**
      * @var EntityManager
