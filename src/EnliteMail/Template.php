@@ -60,7 +60,7 @@ class Template
         $helper = $this->renderer->getHelperPluginManager()->get('HeadTitle');
 
         $message->setBody($this->renderer->render($viewModel));
-        $message->setTitle($helper->renderTitle());
+        $message->setSubject($helper->renderTitle());
 
         return $message;
     }
