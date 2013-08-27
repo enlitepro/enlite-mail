@@ -62,16 +62,14 @@ class MailService implements ServiceLocatorAwareInterface
      * @param string $typeBody
      */
     public function injectFiles(Message $message, $files, $typeBody = Mime::TYPE_TEXT) {
-        $content = new MimeMessage();
         $body = new MimeMessage();
 
-        $htmlPart = new Part($message->getBody());
+        $htmlPart = new Part($message->getBodyText());
         $htmlPart->type = $typeBody;
-        $content->addPart($htmlPart);
-
-        $contentPart = new Part($content->generateMessage());
-        $contentPart->type = 'multipart/alternative;' . PHP_EOL . ' boundary="' . $content->getMime()->boundary() . '"';
-        $body->addPart($contentPart);
+        $htmlPart->charset = 'UTF-8';
+        $htmlPart->encoding = Mime::ENCODING_BASE64;
+        $htmlPart->boundary = $body->getMime()->boundary();
+        $body->addPart($htmlPart);
 
         if (count($files)) {
             foreach ($files as $file) {
@@ -79,6 +77,8 @@ class MailService implements ServiceLocatorAwareInterface
                 $attachment->type = mime_content_type($file);
                 $attachment->encoding = Mime::ENCODING_BASE64;
                 $attachment->disposition = Mime::DISPOSITION_ATTACHMENT;
+                $attachment->filename = basename($file);
+                $attachment->boundary = $body->getMime()->boundary();
 
                 $body->addPart($attachment);
             }
@@ -103,6 +103,17 @@ class MailService implements ServiceLocatorAwareInterface
 
         if (count($files)) {
             $this->injectFiles($message, $files, Mime::TYPE_HTML);
+        } else {
+            $body = new MimeMessage();
+
+            $text = new Part($message->getBodyText());
+            $text->charset = 'UTF-8';
+            $text->boundary = $body->getMime()->boundary();
+            $text->encoding = Mime::ENCODING_BASE64;
+            $text->type = Mime::TYPE_HTML;
+
+            $body->addPart($text);
+            $message->setBody($body);
         }
 
         $this->sendMessage($message);
