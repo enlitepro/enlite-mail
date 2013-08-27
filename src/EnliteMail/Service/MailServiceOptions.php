@@ -31,19 +31,6 @@ class MailServiceOptions extends AbstractOptions
     protected $renderer = 'ViewRenderer';
 
     /**
-     * @param array $config
-     */
-    public function __construct($config = [])
-    {
-        if (isset($config['renderer'])) {
-            $this->setRenderer($config['renderer']);
-        }
-        if (isset($config['transport'])) {
-            $this->setTransport($config['transport']);
-        }
-    }
-
-    /**
      * @param string $renderer
      */
     public function setRenderer($renderer)
