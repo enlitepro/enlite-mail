@@ -68,7 +68,7 @@ class MailService implements ServiceLocatorAwareInterface
         $htmlPart->type = $typeBody;
         $htmlPart->charset = 'UTF-8';
         $htmlPart->encoding = Mime::ENCODING_BASE64;
-        $htmlPart->boundary = $body->getMime()->boundary();
+//        $htmlPart->boundary = $body->getMime()->boundary();
         $body->addPart($htmlPart);
 
         if (count($files)) {
