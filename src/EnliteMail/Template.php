@@ -74,6 +74,8 @@ class Template
 
         $message->getBody()->addPart($text);
         $message->setSubject($helper->renderTitle());
+        // hack for ZF
+        $message->setBody($message->getBody());
 
         return $message;
     }
