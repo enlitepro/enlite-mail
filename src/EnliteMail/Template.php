@@ -6,9 +6,12 @@
 namespace EnliteMail;
 
 use Zend\Mail\Message;
+use Zend\Mime\Mime;
+use Zend\Mime\Part;
 use Zend\View\Helper\HeadTitle;
 use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\RendererInterface;
+use Zend\Mime\Message as MimeMessage;
 
 class Template
 {
@@ -59,7 +62,17 @@ class Template
         /** @var HeadTitle $helper */
         $helper = $this->renderer->getHelperPluginManager()->get('HeadTitle');
 
-        $message->setBody($this->renderer->render($viewModel));
+        if (!$message->getBody()) {
+            $message->setBody(new MimeMessage());
+        }
+
+        $text = new Part($message->getBodyText());
+        $text->charset = 'UTF-8';
+        $text->boundary = $message->getBody()->getMime()->boundary();
+        $text->encoding = Mime::ENCODING_BASE64;
+        $text->type = Mime::TYPE_HTML;
+
+        $message->getBody()->addPart($this->renderer->render($viewModel));
         $message->setSubject($helper->renderTitle());
 
         return $message;

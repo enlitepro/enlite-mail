@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=5.4.0",
         "zendframework/zend-mail": ">=2.2.3",
         "zendframework/zend-view": ">=2.2.3"
     },

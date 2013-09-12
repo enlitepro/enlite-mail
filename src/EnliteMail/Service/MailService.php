@@ -11,17 +11,11 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\View\Renderer\RendererInterface;
-use Zend\Mime\Message as MimeMessage;
 
 class MailService implements ServiceLocatorAwareInterface
 {
 
     use ServiceLocatorAwareTrait;
-
-    /**
-     * @var EntityManager
-     */
-    protected $entityManager = null;
 
     /**
      * @var RendererInterface
@@ -46,7 +40,7 @@ class MailService implements ServiceLocatorAwareInterface
     /**
      * Create template
      *
-     * @param  string   $template
+     * @param  string $template
      * @return Template
      */
     public function createTemplate($template)
@@ -59,33 +53,19 @@ class MailService implements ServiceLocatorAwareInterface
      *
      * @param Message $message
      * @param array $files Paths to files
-     * @param string $typeBody
      */
-    public function injectFiles(Message $message, $files, $typeBody = Mime::TYPE_TEXT) {
-        $body = new MimeMessage();
+    public function injectFiles(Message $message, $files)
+    {
+        foreach ($files as $file) {
+            $attachment = new Part(fopen($file, 'r'));
+            $attachment->type = mime_content_type($file);
+            $attachment->encoding = Mime::ENCODING_BASE64;
+            $attachment->disposition = Mime::DISPOSITION_ATTACHMENT;
+            $attachment->filename = basename($file);
+            $attachment->boundary = $message->getBody()->getMime()->boundary();
 
-        $htmlPart = new Part($message->getBodyText());
-        $htmlPart->type = $typeBody;
-        $htmlPart->charset = 'UTF-8';
-        $htmlPart->encoding = Mime::ENCODING_BASE64;
-//        $htmlPart->boundary = $body->getMime()->boundary();
-        $body->addPart($htmlPart);
-
-        if (count($files)) {
-            foreach ($files as $file) {
-                $attachment = new Part(fopen($file, 'r'));
-                $attachment->type = mime_content_type($file);
-                $attachment->encoding = Mime::ENCODING_BASE64;
-                $attachment->disposition = Mime::DISPOSITION_ATTACHMENT;
-                $attachment->filename = basename($file);
-                $attachment->boundary = $body->getMime()->boundary();
-
-                $body->addPart($attachment);
-            }
+            $message->getBody()->addPart($attachment);
         }
-
-        $message->setBody($body);
-
     }
 
     /**
@@ -102,18 +82,7 @@ class MailService implements ServiceLocatorAwareInterface
         $template->render($message);
 
         if (count($files)) {
-            $this->injectFiles($message, $files, Mime::TYPE_HTML);
-        } else {
-            $body = new MimeMessage();
-
-            $text = new Part($message->getBodyText());
-            $text->charset = 'UTF-8';
-            $text->boundary = $body->getMime()->boundary();
-            $text->encoding = Mime::ENCODING_BASE64;
-            $text->type = Mime::TYPE_HTML;
-
-            $body->addPart($text);
-            $message->setBody($body);
+            $this->injectFiles($message, $files);
         }
 
         $this->sendMessage($message);
