@@ -66,13 +66,13 @@ class Template
             $message->setBody(new MimeMessage());
         }
 
-        $text = new Part($message->getBodyText());
+        $text = new Part($this->renderer->render($viewModel));
         $text->charset = 'UTF-8';
         $text->boundary = $message->getBody()->getMime()->boundary();
         $text->encoding = Mime::ENCODING_BASE64;
         $text->type = Mime::TYPE_HTML;
 
-        $message->getBody()->addPart($this->renderer->render($viewModel));
+        $message->getBody()->addPart($text);
         $message->setSubject($helper->renderTitle());
 
         return $message;
