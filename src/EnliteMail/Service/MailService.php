@@ -41,11 +41,32 @@ class MailService implements ServiceLocatorAwareInterface
      * Create template
      *
      * @param  string $template
+     * @param  array $variables
      * @return Template
      */
-    public function createTemplate($template)
+    public function createTemplate($template, array $variables = [])
     {
-        return new Template($this->getRenderer(), $template);
+        $template = new Template($this->getRenderer(), $template);
+        foreach($variables as $key => $value) {
+            $template->setVariable($key, $value);
+        }
+
+        return $template;
+    }
+
+    /**
+     * @param Template $template
+     * @param array $recipients
+     *
+     * @return Message
+     */
+    public function createMessageFromTemplate(Template $template, array $recipients = null)
+    {
+        $message = $this->factoryMessage();
+        $message->setTo($recipients);
+        $template->render($message);
+
+        return $message;
     }
 
     /**
@@ -77,9 +98,7 @@ class MailService implements ServiceLocatorAwareInterface
      */
     public function sendTemplate($recipients, Template $template, $files = [])
     {
-        $message = $this->factoryMessage();
-        $message->setTo($recipients);
-        $template->render($message);
+        $message = $this->createMessageFromTemplate($template, $recipients);
 
         if (count($files)) {
             $this->injectFiles($message, $files);
