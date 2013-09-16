@@ -61,6 +61,7 @@ class Template
 
         /** @var HeadTitle $helper */
         $helper = $this->renderer->getHelperPluginManager()->get('HeadTitle');
+        $helper->set('');
 
         if (!$message->getBody()) {
             $message->setBody(new MimeMessage());
