@@ -15,7 +15,8 @@ use Zend\View\Renderer\RendererInterface;
 class MailService implements ServiceLocatorAwareInterface
 {
 
-    use ServiceLocatorAwareTrait;
+    use ServiceLocatorAwareTrait,
+        MailServiceOptionsTrait;
 
     /**
      * @var RendererInterface
@@ -47,7 +48,7 @@ class MailService implements ServiceLocatorAwareInterface
     public function createTemplate($template, array $variables = [])
     {
         $template = new Template($this->getRenderer(), $template);
-        foreach($variables as $key => $value) {
+        foreach ($variables as $key => $value) {
             $template->setVariable($key, $value);
         }
 
@@ -60,10 +61,13 @@ class MailService implements ServiceLocatorAwareInterface
      *
      * @return Message
      */
-    public function createMessageFromTemplate(Template $template, array $recipients = null)
+    public function createMessageFromTemplate(Template $template, $recipients = null)
     {
         $message = $this->factoryMessage();
-        $message->setTo($recipients);
+        if (null !== $recipients) {
+            $message->setTo($recipients);
+        }
+
         $template->render($message);
 
         return $message;
@@ -112,7 +116,14 @@ class MailService implements ServiceLocatorAwareInterface
      */
     public function factoryMessage()
     {
-        return new Message();
+        $options = $this->getMailServiceOptions();
+
+        $message = new Message();
+        if ($options->getFromMail()) {
+            $message->setFrom($options->getFromMail(), $options->getFromName());
+        }
+
+        return $message;
     }
 
     /**

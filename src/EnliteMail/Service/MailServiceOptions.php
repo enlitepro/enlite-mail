@@ -31,6 +31,16 @@ class MailServiceOptions extends AbstractOptions
     protected $renderer = 'ViewRenderer';
 
     /**
+     * @var string
+     */
+    protected $fromMail;
+
+    /**
+     * @var string
+     */
+    protected $fromName;
+    
+    /**
      * @param string $renderer
      */
     public function setRenderer($renderer)
@@ -60,6 +70,38 @@ class MailServiceOptions extends AbstractOptions
     public function getTransport()
     {
         return $this->transport;
+    }
+
+    /**
+     * @param string $fromMail
+     */
+    public function setFromMail($fromMail)
+    {
+        $this->fromMail = $fromMail;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFromMail()
+    {
+        return $this->fromMail;
+    }
+
+    /**
+     * @param string $fromName
+     */
+    public function setFromName($fromName)
+    {
+        $this->fromName = $fromName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFromName()
+    {
+        return $this->fromName;
     }
 
 

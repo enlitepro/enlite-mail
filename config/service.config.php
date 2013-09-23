@@ -15,5 +15,7 @@ return array(
     'enlite_mail' => [
         'renderer' => 'ViewRenderer',
         'transport' => 'MailTransport',
+        //'from_mail' => '',
+        //'from_name' => ''
     ],
 );
