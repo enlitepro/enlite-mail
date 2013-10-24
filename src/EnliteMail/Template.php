@@ -68,7 +68,8 @@ class Template
         // replace headTitle
         $headTitle = new HeadTitle();
         $headTitle->setAutoEscape(false);
-        $this->renderer->getHelperPluginManager()->set('HeadTitle', $headTitle);
+        $helperPluginManager->setAllowOverride(true);
+        $helperPluginManager->setService('HeadTitle', $headTitle);
 
         if (!$message->getBody()) {
             $message->setBody(new MimeMessage());
@@ -86,7 +87,7 @@ class Template
         $message->setBody($message->getBody());
 
         // restore original helper
-        $this->renderer->getHelperPluginManager()->set('HeadTitle', $helper);
+        $helperPluginManager->setService('HeadTitle', $helper);
 
         return $message;
     }
