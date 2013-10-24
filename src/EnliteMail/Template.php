@@ -10,6 +10,7 @@ use Zend\Mime\Mime;
 use Zend\Mime\Part;
 use Zend\View\Helper\HeadTitle;
 use Zend\View\Model\ViewModel;
+use Zend\View\Renderer\PhpRenderer;
 use Zend\View\Renderer\RendererInterface;
 use Zend\Mime\Message as MimeMessage;
 
@@ -22,7 +23,7 @@ class Template
     protected $variables = array();
 
     /**
-     * @var RendererInterface
+     * @var RendererInterface|PhpRenderer
      */
     protected $renderer;
 
@@ -59,9 +60,15 @@ class Template
         $viewModel = new ViewModel($this->variables);
         $viewModel->setTemplate($this->template);
 
+        $helperPluginManager = $this->renderer->getHelperPluginManager();
+
         /** @var HeadTitle $helper */
-        $helper = $this->renderer->getHelperPluginManager()->get('HeadTitle');
-        $helper->set('');
+        $helper = $helperPluginManager->get('HeadTitle');
+
+        // replace headTitle
+        $headTitle = new HeadTitle();
+        $headTitle->setAutoEscape(false);
+        $this->renderer->getHelperPluginManager()->set('HeadTitle', $headTitle);
 
         if (!$message->getBody()) {
             $message->setBody(new MimeMessage());
@@ -74,9 +81,12 @@ class Template
         $text->type = Mime::TYPE_HTML;
 
         $message->getBody()->addPart($text);
-        $message->setSubject($helper->renderTitle());
+        $message->setSubject($headTitle->renderTitle());
         // hack for ZF
         $message->setBody($message->getBody());
+
+        // restore original helper
+        $this->renderer->getHelperPluginManager()->set('HeadTitle', $helper);
 
         return $message;
     }
