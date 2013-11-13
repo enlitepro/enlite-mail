@@ -11,10 +11,12 @@ The recommended way to install is through composer.
 ```json
 {
     "require": {
-        "enlitepro/enlite-mail": "1.*"
+        "enlitepro/enlite-mail": "~1.1.3"
     }
 }
 ```
+
+add `EnliteMail` to `modules` in `config/application.config.php`
 
 Configure
 =========
@@ -26,23 +28,25 @@ The module use in default:
 For use other writes in service locator, add to config:
 
 ```php
-[
-    'enlite_mail' => [
-        'renderer' => 'YOU_RENDERER_FOR_MAIL',
-        'transport' => 'YOU_TRANSPORT_FOR_MAIL',
-    ]
-]
+array(
+    'enlite_mail' => array(
+        'renderer' => 'YOUR_RENDERER_FOR_MAIL', // default ViewRenderer
+        'transport' => 'YOUR_TRANSPORT_FOR_MAIL', // default MailTransport
+        'from_mail' => 'YOUR_MAIL',
+        'from_name' => 'YOUR_NAME',
+    )
+)
 ```
 
 For example:
 
 ```php
-[
-    'enlite_mail' => [
-        'renderer' => 'MyLikeRenderer',
+array(
+    'enlite_mail' => array(
+        'renderer' => 'ZfcTwigRenderer',
         'transport' => 'MailTransport',
-    ]
-]
+    )
+)
 ```
 
 For change transport you may set a new transport
@@ -63,22 +67,30 @@ Usage
 
 ```php
 use EnliteMail\Service;
-use \Zend\Mail\Message;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorAwareTrait;
 
-class test {
-    use MailServiceTrait;
+class MyService implements ServiceLocatorAwareInterface
+{
+    use ServiceLocatorAwareTrait,
+        MailServiceTrait;
 
-    public function test() {
+    public function test()
+    {
         // send any mail
-        $message = new Message();
+        $message = $this->getMailService()->factoryMessage(); // this is Zend\Mail\Message
         // configure message
         // ...
         // send
         $this->getMailService()->sendMessage($message);
 
-        // send with use template
-        $template = $this->getMailService()->createTemplate('my-module\controller\view');
+        // create mail from template
+        $template = $this->getMailService()->createTemplate('my-module\controller\view', ['foo' => 'bar']);
         $this->getMailService()->sendTemplate('qwerty@qwerty.com', $template);
+        // or
+        $message = $this->getMailService()->createMessageFromTemplate($template);
+        $this->getMailService()->sendMessage($message);
+
     }
 }
 ```
