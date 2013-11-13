@@ -77,20 +77,65 @@ class MyService implements ServiceLocatorAwareInterface
 
     public function test()
     {
+        $mailService = $this->getMailService();
+
         // send any mail
-        $message = $this->getMailService()->factoryMessage(); // this is Zend\Mail\Message
+        $message = $mailService->factoryMessage(); // this is Zend\Mail\Message
         // configure message
         // ...
         // send
-        $this->getMailService()->sendMessage($message);
+        $mailService->sendMessage($message);
 
-        // create mail from template
-        $template = $this->getMailService()->createTemplate('my-module\controller\view', ['foo' => 'bar']);
-        $this->getMailService()->sendTemplate('qwerty@qwerty.com', $template);
-        // or
-        $message = $this->getMailService()->createMessageFromTemplate($template);
-        $this->getMailService()->sendMessage($message);
-
+        // create mail from template and variables
+        // variable will be pass to template
+        $template = $mailService->createTemplate('my-module\controller\view', ['foo' => 'bar']);
+        $mailService->sendTemplate($template, 'qwerty@example.com');
+        // or, if you want operate message object before send
+        $message = $mailService->createMessageFromTemplate($template);
+        $mailService->sendMessage($message);
     }
 }
+```
+
+Templates
+---------
+
+Template system based on you renderer with all it benefits. There are only one new feature, headTitle plugin set message
+subject, not only page title.
+
+example of __layout/mail.twig__
+
+```html
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    {% block title %}
+        {% do headTitle('My Application').setSeparator(' - ') %}
+    {% endblock %}
+</head>
+<body marginheight="0" topmargin="0" marginwidth="0" leftmargin="0" style="">
+<div class="padded" style="padding:20px 20px 20px 20px">
+    <table style="">
+        <tr>
+            <td style="">
+{% block content %}{{ content|raw }}{% endblock content %}
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
+```
+
+example of __application/mail/invite.twig__
+
+```html
+{% extends "layout/mail" %}
+
+{% block content %}
+    {% do headTitle("You're invited to MyApplication") %}
+    
+    Some variable: {{some_variable}}
+{% endblock %}
 ```
