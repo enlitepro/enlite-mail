@@ -96,11 +96,11 @@ class MailService implements ServiceLocatorAwareInterface
     /**
      * Send a template by mail
      *
-     * @param string|array $recipients
      * @param Template $template
+     * @param string|array $recipients
      * @param array $files
      */
-    public function sendTemplate($recipients, Template $template, $files = [])
+    public function sendTemplate(Template $template, $recipients, $files = [])
     {
         $message = $this->createMessageFromTemplate($template, $recipients);
 

@@ -11,7 +11,7 @@ The recommended way to install is through composer.
 ```json
 {
     "require": {
-        "enlitepro/enlite-mail": "~1.1.3"
+        "enlitepro/enlite-mail": "~1.2.0"
     }
 }
 ```
@@ -55,9 +55,9 @@ in key "MailTransport" for service_manager. For example:
 ```php
 array(
     'service_manager' => array(
-        'invokables' => [
+        'invokables' => array(
             'MailTransport' => 'Zend\Mail\Transport\Sendmail',
-        ],
+        ),
     )
 );
 ```
