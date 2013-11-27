@@ -91,6 +91,9 @@ class MailService implements ServiceLocatorAwareInterface
 
             $message->getBody()->addPart($attachment);
         }
+
+        // hack for ZF
+        $message->setBody($message->getBody());
     }
 
     /**
